@@ -233,6 +233,7 @@ class cnSettingsAPI {
 				// global $wp_settings_sections;print_r($wp_settings_sections);
 			}
 		}
+
 	}
 
 	/**
@@ -492,6 +493,7 @@ class cnSettingsAPI {
 				}
 			}
 		}
+
 	}
 
 	/**
@@ -769,7 +771,11 @@ class cnSettingsAPI {
 									  ->addClass( 'checkbox' )
 									  ->setName( $name )
 									  ->maybeIsChecked( $value )
-									  ->addLabel( Field\Label::create()->setFor( $name )->text( $field['desc'] ) )
+									  ->addLabel(
+										  Field\Label::create()
+													 ->setFor( $name )
+													 ->text( $field['desc'] )
+									  )
 									  ->getHTML();
 				break;
 
@@ -901,7 +907,7 @@ class cnSettingsAPI {
 				foreach ( $field['options'] as $key => $label ) {
 					$checked = checked( true, ( is_array( $value ) ) ? ( in_array( $key, $value ) ) : ( $key == $value ), false );
 
-					$out .= sprintf( '<label><input type="checkbox" class="checkbox" id="%1$s[%2$s]" name="%1$s[]" value="%2$s" %3$s/> %4$s</label><br />', $name, $key, $checked, $label );
+					$out .= sprintf( '<label><input type="checkbox" class="checkbox" id="%1$s[%2$s]" name="%1$s[]" value="%2$s" %3$s/> %4$s</label><br />', esc_attr( $name ), esc_attr( $key ), $checked, esc_html( $label ) );
 				}
 
 				$out .= '</span>';
@@ -914,7 +920,9 @@ class cnSettingsAPI {
 
 				$out .= Field\Text::create()
 								  ->setId( $name )
-								  ->addClass( in_array( $size, $sizes ) ? "{$size}-text" : 'regular-text' )
+								  ->addClass(
+									  in_array( $size, $sizes ) ? "{$size}-text" : 'regular-text'
+								  )
 								  ->setName( $name )
 								  ->setDefaultValue( _array::get( $field, 'default', '' ) )
 								  ->setValue( $value )
@@ -943,7 +951,9 @@ class cnSettingsAPI {
 
 				$out .= Field\Textarea::create()
 									  ->setId( $name )
-									  ->addClass( in_array( $size, $sizes ) ? "{$size}-text" : 'small-text' )
+									  ->addClass(
+										  in_array( $size, $sizes ) ? "{$size}-text" : 'small-text'
+									  )
 									  ->setName( $name )
 									  ->addAttribute( 'rows', 10 )
 									  ->addAttribute( 'cols', 50 )
@@ -1193,7 +1203,7 @@ class cnSettingsAPI {
 
 					$out .= sprintf(
 						'<li value="%1$s"><i class="fa fa-sort"></i> %2$s%3$s</li>',
-						$key,
+						esc_attr( $key ),
 						$hidden,
 						$checkbox
 					);
@@ -1874,6 +1884,7 @@ class cnSettingsAPI {
 			</p>
 		</div>
 		<?php
+
 	}
 
 	/**
@@ -2003,17 +2014,19 @@ class cnSettingsAPI {
 
 			update_option( $optionName, $result );
 		}
+
 	}
 
 	/**
 	 * Returns all the settings registered through this API.
 	 *
-	 * @since 8.3
-	 * @since 10.4.62 Make method public.
+	 * @access private
+	 * @since  8.3
+	 * @static
 	 *
 	 * @return array
 	 */
-	public static function getAll() {
+	private static function getAll() {
 
 		$plugins  = array_keys( self::$registry );
 		$settings = array();
@@ -2030,9 +2043,11 @@ class cnSettingsAPI {
 	 * Reset all the settings to the registered default values
 	 * for a specific plugin that was registered using this API.
 	 *
-	 * @since 0.7.3.0
+	 * @access public
+	 * @since  0.7.3.0
+	 * @static
 	 *
-	 * @param string $pluginID
+	 * @param  string $pluginID
 	 */
 	public static function reset( $pluginID ) {
 
@@ -2048,9 +2063,11 @@ class cnSettingsAPI {
 	/**
 	 * Delete all the settings for a specific plugin that was registered using this API.
 	 *
-	 * @since 0.7.3.0
+	 * @access public
+	 * @since  0.7.3.0
+	 * @static
 	 *
-	 * @param string $pluginID
+	 * @param  string $pluginID
 	 */
 	public static function delete( $pluginID ) {
 

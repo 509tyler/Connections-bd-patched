@@ -587,7 +587,9 @@ class cnMeta {
 		 */
 		do_action( "cn_delete_{$type}_meta", $meta_ids, $id, $key, $_meta_value );
 
-		$query = "DELETE FROM $table WHERE meta_id IN( " . implode( ',', $meta_ids ) . ' )';
+		// Cast all meta IDs to int before imploding to prevent injection via DB-sourced values.
+		$safe_meta_ids = implode( ',', array_map( 'intval', $meta_ids ) );
+		$query = "DELETE FROM $table WHERE meta_id IN( $safe_meta_ids )";
 
 		$count = $wpdb->query( $query );
 

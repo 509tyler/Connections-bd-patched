@@ -5,13 +5,13 @@
  * @author    Steven A. Zahm
  * @license   GPL-2.0+
  * @link      https://connections-pro.com
- * @copyright 2024 Steven A. Zahm
+ * @copyright 2023 Steven A. Zahm
  *
  * @wordpress-plugin
  * Plugin Name:       Connections Business Directory
  * Plugin URI:        https://connections-pro.com/
  * Description:       A business directory and address book manager.
- * Version:           10.4.66
+ * Version:           10.4.48
  * Requires at least: 5.8
  * Requires PHP:      7.0
  * Author:            Steven A. Zahm
@@ -27,8 +27,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-require __DIR__ . '/includes/class.requirements-check.php';
-require __DIR__ . '/includes/class.text-domain.php';
+require dirname( __FILE__ ) . '/includes/class.requirements-check.php';
+require dirname( __FILE__ ) . '/includes/class.text-domain.php';
 
 /**
  * NOTE: Priority set at -1 to allow extensions to use the `connections` text domain. Since extensions are
@@ -48,11 +48,11 @@ $check = new cnRequirements_Check(
 		'requirements' => array(
 			'php' => array(
 				'min' => '7.0', // 5.6.20 -- The minimum PHP version that WordPress 5.2 requires.
-				'max' => '8.3', // 7.4
+				'max' => '9.9', // Patched: raised to allow PHP 8.x
 			),
 			'wp'  => array(
 				'min' => '5.8', // 4.7.12
-				'max' => '6.7',
+				'max' => '9.9', // Patched: raised to allow WordPress 7.x
 			),
 		),
 	)
@@ -60,38 +60,10 @@ $check = new cnRequirements_Check(
 
 if ( $check->passes() ) {
 
-	include __DIR__ . '/includes/class.connections-directory.php';
+	include dirname( __FILE__ ) . '/includes/class.connections-directory.php';
 
 	// Start Connections.
 	if ( class_exists( 'Connections_Directory' ) ) {
-
-		/**
-		 * The main function responsible for returning the Connections instance
-		 * to functions everywhere.
-		 *
-		 * Use this function like you would a global variable, except without needing
-		 * to declare the global.
-		 *
-		 * NOTE: Declaring an instance in the global @var $connections Connections_Directory to provide backward
-		 * compatibility with many internal methods, template and extensions that expect it.
-		 *
-		 * Example: <?php $instance = Connections_Directory(); ?>
-		 *
-		 * @access public
-		 * @since  0.7.9
-		 *
-		 * @global $connections
-		 *
-		 * @return Connections_Directory
-		 */
-		function Connections_Directory() {
-
-			global $connections;
-
-			$connections = Connections_Directory::instance();
-
-			return $connections;
-		}
 
 		Connections_Directory::instance( __FILE__ );
 

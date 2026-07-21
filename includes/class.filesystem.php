@@ -153,6 +153,7 @@ class cnFileSystem {
 		} else {
 			return false;
 		}
+
 	}
 
 	/**
@@ -222,8 +223,18 @@ class cnFileSystem {
 	 */
 	public static function xrmdir( $path, $deleteRoot = true ) {
 
-		// If the $path does not exist, bail.
-		if ( ! file_exists( $path ) ) {
+		// Resolve the real path to prevent directory traversal (CVE-2024-12885).
+		// realpath() returns false if the path does not exist, which also handles the existence check.
+		$real_path = realpath( $path );
+
+		if ( false === $real_path ) {
+			return;
+		}
+
+		// Ensure the resolved path is confined within CN_IMAGE_PATH.
+		$real_image_base = realpath( CN_IMAGE_PATH );
+
+		if ( false === $real_image_base || 0 !== strpos( $real_path, $real_image_base . DIRECTORY_SEPARATOR ) ) {
 			return;
 		}
 
@@ -264,4 +275,5 @@ class cnFileSystem {
 			@rmdir( $path );
 		}
 	}
+
 }
