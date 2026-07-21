@@ -2,19 +2,19 @@
 /**
  * @package   Connections Business Directory
  * @category  Core
- * @author    Steven A. Zahm
+ * @author    Steven A. Zahm (patched by Elev8 Interactive)
  * @license   GPL-2.0+
- * @link      https://connections-pro.com
+ * @link      https://github.com/509tyler/Connections-bd-patched
  * @copyright 2023 Steven A. Zahm
  *
  * @wordpress-plugin
- * Plugin Name:       Connections Business Directory
- * Plugin URI:        https://connections-pro.com/
- * Description:       A business directory and address book manager.
- * Version:           10.4.48
+ * Plugin Name:       Connections Business Directory (Community Patch)
+ * Plugin URI:        https://github.com/509tyler/Connections-bd-patched
+ * Description:       A business directory and address book manager. Community-maintained security and PHP 8.x compatibility patch of version 10.4.48.
+ * Version:           10.4.48-p1
  * Requires at least: 5.8
  * Requires PHP:      7.0
- * Author:            Steven A. Zahm
+ * Author:            Steven A. Zahm (patched by Elev8 Interactive)
  * Author URI:        https://connections-pro.com/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt

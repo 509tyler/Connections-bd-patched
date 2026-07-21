@@ -51,7 +51,7 @@ final class Connections_Directory {
 	 *
 	 * @since 8.16
 	 */
-	const VERSION = '10.4.48';
+	const VERSION = '10.4.48-p1';
 
 	/**
 	 * Stores the instance of this class.
@@ -413,6 +413,11 @@ final class Connections_Directory {
 		add_action( 'cn_process_visibility', array( 'cnEntry_Action', 'updateTermCount' ) );
 
 		// Add the "Edit Entry" menu items to the admin bar.
+		// Explicitly load cnEntry_Action before registering the callback to satisfy PHP 8.x
+		// strict callback validation which fires before the autoloader resolves the class.
+		if ( ! class_exists( 'cnEntry_Action' ) ) {
+			require_once CN_PATH . 'includes/entry/class.entry-actions.php';
+		}
 		add_action( 'admin_bar_menu', array( 'cnEntry_Action', 'adminBarMenuItems' ), 90 );
 
 		// Register the shortcode hooks.
