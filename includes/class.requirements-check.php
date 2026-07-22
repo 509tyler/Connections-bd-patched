@@ -67,7 +67,7 @@ final class cnRequirements_Check {
 	public function __construct( $args ) {
 
 		$defaults = array(
-			'name'         => __( 'Unknown Plugin Name', 'connections' ),
+			'name'         => 'Unknown Plugin Name', // Patched: removed early __() call to prevent text domain loading before init
 			'basename'     => plugin_basename( __FILE__ ),
 			'file'         => __FILE__,
 			'requirements' => $this->requirements,
@@ -115,6 +115,7 @@ final class cnRequirements_Check {
 			add_action( 'load-toplevel_page_connections_dashboard', array( $this, 'wp_register_tested_notice' ) );
 			add_action( 'load-connections_page_connections_settings', array( $this, 'wp_register_tested_notice' ) );
 		}
+
 	}
 
 	/**
