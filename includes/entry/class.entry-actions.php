@@ -11,6 +11,7 @@
 
 use Connections_Directory\Taxonomy\Registry;
 use Connections_Directory\Utility\_array;
+use Connections_Directory\Utility\_nonce;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
@@ -359,6 +360,7 @@ class cnEntry_Action {
 
 			@unlink( $file->getPathname() );
 		}
+
 	}
 
 	/**
@@ -430,6 +432,7 @@ class cnEntry_Action {
 				@unlink( $path . $entry->getImageNameProfile() );
 			}
 		}
+
 	}
 
 	/**
@@ -599,7 +602,7 @@ class cnEntry_Action {
 				break;
 		}
 
-		$slug = $entry->getFilesafeSlug();
+		$slug = rawurldecode( $entry->getSlug() );
 
 		/**
 		 * Allow the entry object to be modified before being inserted into the database.
@@ -962,8 +965,6 @@ class cnEntry_Action {
 		// Check for and convert to an array.
 		$ids = wp_parse_id_list( $id );
 
-		do_action( 'Connections_Directory/Entry/Action/Set_Status/Before', $ids, $status );
-
 		// Create the placeholders for the $id values to be used in $wpdb->prepare().
 		$d = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 
@@ -983,7 +984,6 @@ class cnEntry_Action {
 			 * @param array $ids An array of entry IDs that had their status changed.
 			 */
 			do_action( 'cn_process_status', $ids );
-			do_action( 'Connections_Directory/Entry/Action/Set_Status/After', $ids, $status );
 		}
 
 		return false !== $result ? true : false;
@@ -1024,8 +1024,6 @@ class cnEntry_Action {
 		// Check for and convert to an array.
 		$ids = wp_parse_id_list( $id );
 
-		do_action( 'Connections_Directory/Entry/Action/Set_Visibility/Before', $ids, $visibility );
-
 		// Create the placeholders for the $id values to be used in $wpdb->prepare().
 		$d = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 
@@ -1045,7 +1043,6 @@ class cnEntry_Action {
 			 * @param array $ids An array of entry IDs that had their visibility changed.
 			 */
 			do_action( 'cn_process_visibility', $ids );
-			do_action( 'Connections_Directory/Entry/Action/Set_Visibility/After', $ids, $visibility );
 		}
 
 		return false !== $result ? true : false;
@@ -1283,4 +1280,50 @@ class cnEntry_Action {
 		 */
 		do_action( 'cn_clean_entry_cache' );
 	}
+
+	/**
+	 * Add the entry actions to the admin bar
+	 *
+	 * @since 8.2
+	 *
+	 * @param WP_Admin_Bar $admin_bar
+	 */
+	public static function adminBarMenuItems( $admin_bar ) {
+
+		if ( cnQuery::getVar( 'cn-entry-slug' ) ) {
+
+			// Grab an instance of the Connections object.
+			$instance = Connections_Directory();
+			$entry    = $instance->retrieve->entries( array( 'slug' => rawurldecode( cnQuery::getVar( 'cn-entry-slug' ) ), 'status' => 'approved,pending' ) );
+
+			// Make sure an entry is returned and if not, return $title unaltered.
+			if ( empty( $entry ) ) {
+
+				return;
+			}
+
+			if ( ( current_user_can( 'connections_manage' ) && current_user_can( 'connections_view_menu' ) ) && ( current_user_can( 'connections_edit_entry_moderated' ) || current_user_can( 'connections_edit_entry' ) ) ) {
+
+				$id  = $entry[0]->id;
+				$url = _nonce::url( "admin.php?page=connections_manage&cn-action=edit_entry&id={$id}", 'entry_edit', $id );
+
+				$admin_bar->add_node(
+					array(
+						'parent' => false,
+						'id'     => 'cn-edit-entry',
+						'title'  => __( 'Edit Entry', 'connections' ),
+						'href'   => admin_url( $url ),
+						'meta'   => array(
+							// 'class' => 'edit',
+							'title' => __( 'Edit Entry', 'connections' ),
+						),
+					)
+				);
+
+			}
+
+		}
+
+	}
+
 }
